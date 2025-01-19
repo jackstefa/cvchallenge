@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QIcon
 import cv2
 from collections import deque
 from model import *
@@ -14,7 +14,13 @@ class CameraGUI(QMainWindow):
         self.video_label = QLabel("Camera feed will appear here")
         self.video_label.setAlignment(Qt.AlignCenter)
         self.start_button = QPushButton("Start Camera")
-
+        
+        # Pyinstaller
+        if getattr(sys, 'frozen', False):
+            self.setWindowIcon(QIcon(os.path.join(sys._MEIPASS, 'icon.png')))
+        else:
+            self.setWindowIcon(QIcon('icon.png'))
+    
         self.start_button.clicked.connect(self.start_camera)
         
         self.rules_label = QLabel("Place the digit inside the green box")
@@ -106,7 +112,7 @@ class CameraGUI(QMainWindow):
                 # Find the best digit
                 best_digit = np.argmax(self.smoothed_probs)
                 best_prob = self.smoothed_probs[best_digit]
-                
+                                
                 # Show the best digit
                 if(self.frame_counter == 30):
                     # Show only if the probability is greater than 60%
